@@ -1,8 +1,11 @@
 import pandas as pd
 import matplotlib.pyplot as plt 
 import seaborn as sns
+import os
 
-crime = pd.read_csv('crime.csv') 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+csv_path = os.path.join(script_dir, "crime.csv")
+crime = pd.read_csv(csv_path)  
 
 plt.plot(crime.Murder, crime.Assault)
 plt.title('Murder Vs Assault')

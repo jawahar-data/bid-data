@@ -1,7 +1,10 @@
 import pandas as pd
 import pickle
+import os
 
-data = pd.read_csv('data.csv')
+script_dir = os.path.dirname(os.path.abspath(__file__))
+csv_path = os.path.join(script_dir, "data.csv")
+data = pd.read_csv(csv_path)
 
 slice1 = data.iloc[0:4,:]
 slice2 = data.iloc[4:8,:]
@@ -22,7 +25,8 @@ for i in [map1, map2]:
         if j[0] in shuffled:
             shuffled[j[0]].append(j[1])
 
-with open('shuffled.pkl', 'wb') as file:
+pkl_path = os.path.join(script_dir, 'shuffled.pkl')
+with open(pkl_path, 'wb') as file:
     pickle.dump(shuffled, file)
 
 print("Data has been mapped and saved to shuffled.pkl.")

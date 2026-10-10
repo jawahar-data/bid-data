@@ -1,6 +1,9 @@
 import pickle
+import os
 
-with open('shuffled.pkl','rb') as file:
+script_dir = os.path.dirname(os.path.abspath(__file__))
+pkl_path = os.path.join(script_dir, 'shuffled.pkl')
+with open(pkl_path,'rb') as file:
     shuffled = pickle.load(file)
 
 def reduce(shuffled_dict):

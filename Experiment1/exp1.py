@@ -1,7 +1,10 @@
 import pandas as pd
 import numpy as np
+import os
 
-dataset1 = pd.read_csv("crime.csv")
+script_dir = os.path.dirname(os.path.abspath(__file__))
+csv_path = os.path.join(script_dir, "crime.csv")
+dataset1 = pd.read_csv(csv_path)
 print(dataset1.head())
 print(dataset1.tail())
 print(type(dataset1))
