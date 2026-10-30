@@ -1,32 +1,52 @@
-import pandas as pd
 import pickle
-import os
+from pathlib import Path
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-csv_path = os.path.join(script_dir, "data.csv")
-data = pd.read_csv(csv_path)
+import pandas as pd
 
-slice1 = data.iloc[0:4,:]
-slice2 = data.iloc[4:8,:]
 
-def mapper(data_slice):
+script_dir = Path(__file__).resolve().parent
+data = pd.read_csv(script_dir / "data.csv")
+
+# Slicing data
+slice1 = data.iloc[0:399, :]
+slice2 = data.iloc[400:800, :]
+slice3 = data.iloc[801:1200, :]
+slice4 = data.iloc[1201:, :]
+
+
+def mapper(data):
     mapped = []
-    for index,row in data_slice.iterrows():
-        mapped.append((row['quality'],row['volatile acidity']))
+    for _, row in data.iterrows():
+        mapped.append((row["quality"], row["volatile acidity"]))
     return mapped
+
 
 map1 = mapper(slice1)
 map2 = mapper(slice2)
+map3 = mapper(slice3)
+map4 = mapper(slice4)
 
-shuffled = { 3.0:[], 4.0:[], 5.0:[], 6.0:[], 7.0:[], 8.0:[] }
+shuffled = {}
+for mapped_slice in (map1, map2, map3, map4):
+    for quality, volatile_acidity in mapped_slice:
+        shuffled.setdefault(quality, []).append(volatile_acidity)
 
-for i in [map1, map2]:
-    for j in i:
-        if j[0] in shuffled:
-            shuffled[j[0]].append(j[1])
-
-pkl_path = os.path.join(script_dir, 'shuffled.pkl')
-with open(pkl_path, 'wb') as file:
+with (script_dir / "shuffled.pkl").open("wb") as file:
     pickle.dump(shuffled, file)
 
-print("Data has been mapped and saved to shuffled.pkl.")
+print("Data has been mapped.")
+
+
+# Reducer
+def reduce(shuffled_dict):
+    return {
+        quality: sum(volatile_acidity_values) / len(volatile_acidity_values)
+        for quality, volatile_acidity_values in shuffled_dict.items()
+        if volatile_acidity_values
+    }
+
+
+final = reduce(shuffled)
+print("Average volatile acidity in different classes of wine:")
+for quality, average in final.items():
+    print(quality, ":", average)
